@@ -73,6 +73,7 @@ type UserTraffic struct {
 	Email    string
 	Upload   int64
 	Download int64
+	Count    int64 `json:"n"`
 }
 
 type ClientInfo struct {

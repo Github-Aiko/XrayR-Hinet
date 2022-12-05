@@ -231,6 +231,12 @@ func (d *DefaultDispatcher) getLink(ctx context.Context, network net.Network, sn
 	}
 
 	if user != nil && len(user.Email) > 0 {
+		// count user
+		p := d.policy.ForLevel(user.Level)
+		countName := "user>>>" + user.Email + ">>>request>>>count"
+		if c, _ := stats.GetOrRegisterCounter(d.stats, countName); c != nil {
+			c.Add(1)
+		}
 		// Speed Limit and Device Limit
 		bucket, ok, reject := d.Limiter.GetUserBucket(sessionInbound.Tag, user.Email, sessionInbound.Source.Address.IP().String())
 		if reject {

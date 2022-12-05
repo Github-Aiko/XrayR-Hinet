@@ -544,8 +544,8 @@ func (c *Controller) userInfoMonitor() (err error) {
 	UpdatePeriodic := int64(c.config.UpdatePeriodic)
 	limitedUsers := make([]api.UserInfo, 0)
 	for _, user := range *c.userList {
-		up, down, upCounter, downCounter := c.getTraffic(c.buildUserTag(&user))
-		if up > 0 || down > 0 {
+		up, down, count, upCounter, downCounter := c.getTraffic(c.buildUserTag(&user))
+		if up > 0 || down > 0 || count > 0 {
 			// Over speed users
 			if AutoSpeedLimit > 0 {
 				if down > AutoSpeedLimit*1000000*UpdatePeriodic/8 || up > AutoSpeedLimit*1000000*UpdatePeriodic/8 {
@@ -568,7 +568,8 @@ func (c *Controller) userInfoMonitor() (err error) {
 				UID:      user.UID,
 				Email:    user.Email,
 				Upload:   up,
-				Download: down})
+				Download: down,
+				Count:    count})
 
 			if upCounter != nil {
 				upCounterList = append(upCounterList, upCounter)
