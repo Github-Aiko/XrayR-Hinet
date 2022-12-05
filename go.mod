@@ -1,4 +1,4 @@
-module github.com/XrayR-project/XrayR
+module github.com/harryngne/XrayR-Hinet
 
 go 1.19
 
