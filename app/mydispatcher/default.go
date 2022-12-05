@@ -231,12 +231,6 @@ func (d *DefaultDispatcher) getLink(ctx context.Context, network net.Network, sn
 	}
 
 	if user != nil && len(user.Email) > 0 {
-		// count user
-		p := d.policy.ForLevel(user.Level)
-		countName := "user>>>" + user.Email + ">>>request>>>count"
-		if c, _ := stats.GetOrRegisterCounter(d.stats, countName); c != nil {
-			c.Add(1)
-		}
 		// Speed Limit and Device Limit
 		bucket, ok, reject := d.Limiter.GetUserBucket(sessionInbound.Tag, user.Email, sessionInbound.Source.Address.IP().String())
 		if reject {
@@ -251,7 +245,12 @@ func (d *DefaultDispatcher) getLink(ctx context.Context, network net.Network, sn
 			inboundLink.Writer = d.Limiter.RateWriter(inboundLink.Writer, bucket)
 			outboundLink.Writer = d.Limiter.RateWriter(outboundLink.Writer, bucket)
 		}
+		// count user
 		p := d.policy.ForLevel(user.Level)
+		countName := "user>>>" + user.Email + ">>>request>>>count"
+		if c, _ := stats.GetOrRegisterCounter(d.stats, countName); c != nil {
+			c.Add(1)
+		}
 		if p.Stats.UserUplink {
 			name := "user>>>" + user.Email + ">>>traffic>>>uplink"
 			if c, _ := stats.GetOrRegisterCounter(d.stats, name); c != nil {
